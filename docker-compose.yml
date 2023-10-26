@@ -1,0 +1,20 @@
+version: '3.9'
+services:
+    backend:
+        build: ./backend
+        expose:
+            - '8000'
+        command: 'python manage.py migrate --noinput && python manage.py runserver'
+        volumes:
+            - .:/bank
+
+    nginx:
+        restart: always
+        build: ./nginx
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - .:/bank
+        depends_on:
+            - backend
