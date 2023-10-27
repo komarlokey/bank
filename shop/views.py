@@ -106,4 +106,29 @@ class GoodsByCategoryApiView(APIView):
         return Response(data=data, status=HTTP_200_OK)
 
 
+class CartApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
 
+    def get(self, request):
+        if "cart" in request.session.keys():
+            data = {"cart": request.session["cart"]}
+        else:
+            data = {"cart": []}
+        return Response(data=data, status=HTTP_200_OK)
+
+    def post(self, request):
+        good_id = request.data["id"]
+        count = request.data["count"]
+        if "cart" in request.session.keys():
+            is_new = True
+            for i in range(len(request.session["cart"])):
+                if request.session["cart"][i][0] == good_id:
+                    request.session["cart"][i][1] += count
+                    is_new = False
+                    break
+            if is_new:
+                request.session["cart"].append((good_id, count))
+        else:
+            request.session["cart"] = [(good_id, count)]
+        request.session.modified = True
+        return Response(data={"msg": "Товар был добавлен в корзину"}, status=HTTP_200_OK)

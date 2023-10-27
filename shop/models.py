@@ -24,3 +24,14 @@ class Favourite(models.Model):
     buyer = models.OneToOneField("bank.A_User", on_delete=models.CASCADE)
     goods = models.ManyToManyField("Good", blank=True)
 
+
+class Order(models.Model):
+    buyer = models.ForeignKey("bank.A_User", on_delete=models.CASCADE)
+    goods = models.ManyToManyField("OrderGoods")
+    date_time = models.DateTimeField(auto_now=True)
+    final_sum = models.PositiveIntegerField()
+
+
+class OrderGoods(models.Model):
+    good = models.ForeignKey("Good", on_delete=models.CASCADE)
+    count = models.PositiveSmallIntegerField(default=1)
