@@ -16,9 +16,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework.permissions import AllowAny
+
+SchemaView = get_schema_view(
+    openapi.Info(
+        title="bank",
+        default_version="v1",
+        description="internet_banking",
+        terms_of_service="",
+        contact=openapi.Contact(email="komarlokey2@gmail.com"),
+        license=openapi.License(name="bank"),
+    ),
+    patterns=[
+        path("bank/", include("bank.urls")),
+        path('shop/', include("shop.urls")),
+    ],
+    public=True,
+    permission_classes=[AllowAny, ],
+)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('bank/', include("bank.urls")),
     path('shop/', include("shop.urls")),
+    path('docs/', SchemaView.with_ui("swagger", cache_timeout=0), name="docs"),
 ]

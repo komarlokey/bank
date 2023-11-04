@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'bank',
     'shop',
     'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

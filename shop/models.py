@@ -18,6 +18,7 @@ class Good(models.Model):
     price = models.PositiveIntegerField(default=0)
     category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True)
     reviews = models.ManyToManyField("Review", blank=True)
+    bought = models.PositiveIntegerField(default=0)
 
 
 class Favourite(models.Model):

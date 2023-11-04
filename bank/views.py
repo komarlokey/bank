@@ -6,6 +6,11 @@ from rest_framework.response import Response
 from rest_framework.status import *
 from django.contrib.auth import authenticate, login
 from bank.models import *
+import random
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from rest_framework import status
+from .models import *
 
 
 class AuthApiView(APIView):
@@ -44,12 +49,31 @@ class BasicRegistrationApiView(APIView):
         for field in required_fields:
             if field not in request.data.keys():
                 return Response({'message': field.capitalize() + ' is required!'}, status=status.HTTP_400_BAD_REQUEST)
-        if request.data['type'] not in ['company', 'worker']:
-            return Response({'message': 'Type must be "company" or "worker"!'}, status=status.HTTP_400_BAD_REQUEST)
         if request.data['password1'] != request.data['password2']:
             return Response({'message': 'Passwords didn`t match!'}, status=status.HTTP_400_BAD_REQUEST)
-        user = CustomUser(email=request.data['email'].lower(), type=request.data['type'])
+        user = A_User(email=request.data['email'].lower())
         user.set_password(request.data['password1'])
         user.save()
         return Response({'message': 'User is created!', 'email': user.email}, status=status.HTTP_201_CREATED)
+
+
+class CardApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = CardSerializer
+
+    def get(self, request):
+        card = Card.objects.filter(owner=request.user)
+        data = CardSerializer(card, many=True).data
+        return Response(data=data, status=HTTP_200_OK)
+
+    def post(self, request):
+        card_number = ''.join([str(random.randint(0, 9)) for _ in range(16)])
+        expiration_date = datetime.now() + relativedelta(years=4)
+        expiration_date = expiration_date.date()
+        currency = request.data["currency"]
+        cvv = ''.join([str(random.randint(0,9)) for _ in range(3)])
+        bank_card = Card(number=card_number, owner=request.user, currency=currency, cvv=cvv, expired=expiration_date)
+        bank_card.save()
+        serializer = CardSerializer(bank_card)
+        return Response(serializer.data, status=HTTP_201_CREATED)
 

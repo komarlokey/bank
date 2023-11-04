@@ -8,4 +8,7 @@ urlpatterns = [
     path("goods_detail/<int:pk>", GoodDetailApiView.as_view(), name="goods_detail"),
     path("goods_by_category/<int:pk>", GoodsByCategoryApiView.as_view(), name="goods_by_category"),
     path("cart", CartApiView.as_view(), name="cart"),
+    path("purchase", OrderApiView.as_view(), name="purchase"),
+    path("cart_increase/<int:index>", CartIncreaseApiView.as_view(), name="cart_increase"),
+    path("cart_decrease/<int:index>", CartDecreaseApiView.as_view(), name="cart_decrease"),
 ]
